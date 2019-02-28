@@ -92,10 +92,15 @@ class AVLTree:
                 old_right_child.node.left, 'node', None)
 
             self.node = old_right_child.node
+
+            # catch error in case node.left is still None, not yet ATLTree
             try:
                 self.node.left.node = old_parent
             except AttributeError:
                 self.node.left = AVLTree(old_parent)
+
+            # Need to make a new node with key, otherwise reusing the old node will
+            # have old left and right pointers which are no longer accurate
             self.node.left.node.right.node = Node(
                 old_left_child_of_right_child.key) if old_left_child_of_right_child is not None else None
         else:
@@ -117,10 +122,15 @@ class AVLTree:
                 old_left_child.node.right, 'node', None)
 
             self.node = old_left_child.node
+
+            # catch error in case node.right is still None, not yet ATLTree
             try:
                 self.node.right.node = old_parent
             except AttributeError:
                 self.node.right = AVLTree(old_parent)
+
+            # Need to make a new node with key, otherwise reusing the old node will
+            # have old left and right pointers which are no longer accurate
             self.node.right.node.left.node = Node(
                 old_right_child_of_left_child.key) if old_right_child_of_left_child is not None else None
 
@@ -139,11 +149,13 @@ class AVLTree:
         balance = self.update_balance()
 
         if balance > 1:
+            # check if double rotation is needed
             if self.node.left and self.node.left.update_balance() < 0:
                 self.node.left._left_rotate()
             self._right_rotate()
 
         elif balance < -1:
+            # check if double rotation is needed
             if self.node.right and self.node.right.update_balance() > 0:
                 self.node.right._right_rotate()
             self._left_rotate()
